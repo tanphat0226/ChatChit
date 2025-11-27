@@ -14,6 +14,7 @@ class Database {
 			console.log('Connected To MongoDB Successfully')
 		} catch (error) {
 			console.error('Error Connecting To MongoDB', error)
+			process.exit(1)
 		}
 	}
 
