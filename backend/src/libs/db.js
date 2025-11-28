@@ -1,6 +1,6 @@
 'use strict'
 import mongoose from 'mongoose'
-import { env } from '../configs/envỉonment.js'
+import { env } from '../configs/environment.js'
 
 class Database {
 	constructor() {

@@ -2,9 +2,9 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
-import { env } from '../configs/envỉonment.js'
+import { env } from '../configs/environment.js'
 import Session from '../models/Session.model.js'
-import User from '../models/user.model.js'
+import User from '../models/User.model.js'
 
 const ACCESS_TOKEN_TTL = '30m' // Access token time to live
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000 // Refresh token time to live in milliseconds (14 days)
