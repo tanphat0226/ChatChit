@@ -1,4 +1,5 @@
 import express from 'express'
+import { ROUTES } from './routes/index.js'
 
 const app = express()
 
@@ -6,6 +7,9 @@ const app = express()
 app.use(express.json())
 
 // Connect to database
-import '../libs/db.js'
+import '../src/libs/db.js'
+
+// Use Routes
+app.use('/api', ROUTES)
 
 export default app
