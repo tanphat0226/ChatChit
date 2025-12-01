@@ -1,7 +1,13 @@
-import React from 'react'
+import { SignInForm } from '@/components/auth/signin-form'
 
 const SignInPage = () => {
-	return <div>SignInPage</div>
+	return (
+		<div className='bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10 relative inset-0 z-0 bg-gradient-purple overflow-auto'>
+			<div className='w-full max-w-sm md:max-w-4xl'>
+				<SignInForm />
+			</div>
+		</div>
+	)
 }
 
 export default SignInPage
