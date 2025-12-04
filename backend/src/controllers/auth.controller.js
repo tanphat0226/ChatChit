@@ -7,7 +7,7 @@ import Session from '../models/Session.model.js'
 import User from '../models/User.model.js'
 import { log } from 'console'
 
-const ACCESS_TOKEN_TTL = '30m' // Access token time to live
+const ACCESS_TOKEN_TTL = '30s' // Access token time to live
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000 // Refresh token time to live in milliseconds (14 days)
 
 const signUp = async (req, res) => {
@@ -146,8 +146,54 @@ const signOut = async (req, res) => {
 	}
 }
 
+// Create new access token using refresh token
+const refreshToken = async (req, res) => {
+	try {
+		// Get refresh token from cookies
+		const token = req.cookies?.refreshToken
+
+		if (!token) {
+			return res
+				.status(StatusCodes.UNAUTHORIZED)
+				.json({ message: 'Token not provided' })
+		}
+
+		// Compare with refresh token in database
+		const session = await Session.findOne({ refreshToken: token })
+
+		if (!session) {
+			return res
+				.status(StatusCodes.FORBIDDEN)
+				.json({ message: 'Token invalid or expired' })
+		}
+
+		// Validate refresh token
+		if (session.expiresAt < new Date()) {
+			return res
+				.status(StatusCodes.FORBIDDEN)
+				.json({ message: 'Token expired' })
+		}
+
+		// If valid, generate new access token
+		const accessToken = jwt.sign(
+			{ userId: session.userId },
+			env.ACCESS_TOKEN_SECRET,
+			{ expiresIn: ACCESS_TOKEN_TTL }
+		)
+
+		// Return new access token
+		return res.status(StatusCodes.OK).json({ accessToken })
+	} catch (error) {
+		console.error('Error during RefreshToken Controller:', error)
+		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+			message: 'Internal Server Error',
+		})
+	}
+}
+
 export const AuthController = {
 	signUp,
 	signIn,
 	signOut,
+	refreshToken,
 }
