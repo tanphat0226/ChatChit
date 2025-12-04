@@ -13,6 +13,11 @@ const authMe = (req, res) => {
 	}
 }
 
+const test = (req, res) => {
+	return res.sendStatus(StatusCodes.NO_CONTENT)
+}
+
 export const UserController = {
 	authMe,
+	test,
 }

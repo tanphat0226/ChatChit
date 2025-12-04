@@ -57,4 +57,10 @@ export const authService = {
 
 		return res.data.user
 	},
+
+	refreshToken: async () => {
+		const res = await api.post('/auth/refresh', { withCredentials: true })
+
+		return res.data.accessToken
+	},
 }

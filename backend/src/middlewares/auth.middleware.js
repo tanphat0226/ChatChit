@@ -21,7 +21,7 @@ export const authMiddleware = async (req, res, next) => {
 
 				return res
 					.status(StatusCodes.FORBIDDEN)
-					.json({ message: 'Forbidden! Invalid token.' })
+					.json({ message: 'Forbidden! Token invalid or expired.' })
 			}
 
 			// Find user by ID

@@ -9,4 +9,6 @@ Router.post('/signin', AuthController.signIn)
 
 Router.post('/signout', AuthController.signOut)
 
+Router.post('/refresh', AuthController.refreshToken)
+
 export const authRoute = Router

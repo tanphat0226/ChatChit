@@ -5,4 +5,6 @@ const Router = express.Router()
 
 Router.get('/me', UserController.authMe)
 
+Router.get('/test', UserController.test)
+
 export const userRoute = Router
