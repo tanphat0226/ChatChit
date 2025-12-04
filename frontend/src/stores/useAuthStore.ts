@@ -43,6 +43,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 			})
 
 			set({ accessToken })
+			// Fetch the authenticated user's details
+			await get().fetchMe()
 			toast.success('Sign in successful! Welcome back. 🎆')
 		} catch (error) {
 			console.error(error)
@@ -61,6 +63,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 		} catch (error) {
 			console.error(error)
 			toast.error('Failed to sign out. Please try again.')
+		}
+	},
+
+	fetchMe: async () => {
+		try {
+			set({ isLoading: true })
+
+			const user = await authService.fetchMe()
+
+			set({ user })
+		} catch (error) {
+			console.error(error)
+
+			set({ accessToken: null, user: null })
+
+			toast.error('Failed to fetch user. Please try again.')
+		} finally {
+			set({ isLoading: false })
 		}
 	},
 }))
