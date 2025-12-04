@@ -1,0 +1,66 @@
+import { authService } from '@/services/authServices'
+import type { AuthState } from '@/types/store'
+import { toast } from 'sonner'
+import { create } from 'zustand'
+
+export const useAuthStore = create<AuthState>((set, get) => ({
+	accessToken: null,
+	user: null,
+	isLoading: false,
+
+	clearState: () => set({ accessToken: null, user: null, isLoading: false }),
+
+	signUp: async ({ firstName, lastName, username, email, password }) => {
+		try {
+			set({ isLoading: true })
+
+			// Call API to sign up the user
+			await authService.signUp({
+				firstName,
+				lastName,
+				username,
+				email,
+				password,
+			})
+
+			toast.success('Sign up successful! You can now sign in.')
+		} catch (error) {
+			console.error(error)
+			toast.error('Failed to sign up. Please try again.')
+		} finally {
+			set({ isLoading: false })
+		}
+	},
+
+	signIn: async ({ username, password }) => {
+		try {
+			set({ isLoading: true })
+
+			// Call API to sign in the user
+			const { accessToken } = await authService.signIn({
+				username,
+				password,
+			})
+
+			set({ accessToken })
+			toast.success('Sign in successful! Welcome back. 🎆')
+		} catch (error) {
+			console.error(error)
+			toast.error('Failed to sign in. Please try again.')
+		} finally {
+			set({ isLoading: false })
+		}
+	},
+
+	signOut: async () => {
+		try {
+			await authService.signOut()
+			get().clearState()
+
+			toast.success('Sign out successful! 👋')
+		} catch (error) {
+			console.error(error)
+			toast.error('Failed to sign out. Please try again.')
+		}
+	},
+}))

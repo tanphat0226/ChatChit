@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { env } from '../configs/environment.js'
 import Session from '../models/Session.model.js'
 import User from '../models/User.model.js'
+import { log } from 'console'
 
 const ACCESS_TOKEN_TTL = '30m' // Access token time to live
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000 // Refresh token time to live in milliseconds (14 days)
@@ -132,13 +133,11 @@ const signOut = async (req, res) => {
 			// Delete session from database
 			await Session.deleteOne({ refreshToken: token })
 
-			// Delete cockies
+			// Delete cookie
 			res.clearCookie('refreshToken')
 		}
 
-		return res.status(StatusCodes.OK).send({
-			message: 'User signed out successfully',
-		})
+		return res.sendStatus(StatusCodes.NO_CONTENT)
 	} catch (error) {
 		console.error('Error during SignOut Controller:', error)
 		res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

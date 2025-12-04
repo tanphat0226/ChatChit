@@ -1,11 +1,12 @@
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { Input } from '@/components/ui/input'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 const SignUpSchema = z
 	.object({
@@ -31,6 +32,8 @@ export function SignupForm({
 	className,
 	...props
 }: React.ComponentProps<'div'>) {
+	const { signUp } = useAuthStore()
+	const navigate = useNavigate()
 	const {
 		register,
 		handleSubmit,
@@ -39,17 +42,14 @@ export function SignupForm({
 		resolver: zodResolver(SignUpSchema),
 	})
 
-	const onSubmit = (data: SignUpFormValues) => {
+	const onSubmit = async (data: SignUpFormValues) => {
 		const { firstName, lastName, username, email, password } = data
-		const signupData = {
-			firstName,
-			lastName,
-			username,
-			email,
-			password,
-		}
 
-		console.log(signupData)
+		// Call signUp from the auth store
+		await signUp({ firstName, lastName, username, email, password })
+
+		// Navigate to sign-in page after successful sign-up
+		navigate('/signin')
 	}
 
 	return (
