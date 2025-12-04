@@ -1,11 +1,12 @@
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Link } from 'react-router'
-import { z } from 'zod'
 import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
+import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/stores/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router'
+import { z } from 'zod'
 
 const SignInSchema = z.object({
 	username: z.string().min(3, 'Username must be at least 3 characters long'),
@@ -18,6 +19,8 @@ export function SignInForm({
 	className,
 	...props
 }: React.ComponentProps<'div'>) {
+	const { signIn } = useAuthStore()
+	const navigate = useNavigate()
 	const {
 		register,
 		handleSubmit,
@@ -26,8 +29,16 @@ export function SignInForm({
 		resolver: zodResolver(SignInSchema),
 	})
 
-	const onSubmit = (data: SignInFormValues) => {
-		console.log(data)
+	const onSubmit = async (data: SignInFormValues) => {
+		try {
+			const { username, password } = data
+
+			await signIn({ username, password })
+
+			navigate('/')
+		} catch (error) {
+			console.error('Sign in failed:', error)
+		}
 	}
 
 	return (

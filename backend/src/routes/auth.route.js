@@ -7,6 +7,6 @@ Router.post('/signup', AuthController.signUp)
 
 Router.post('/signin', AuthController.signIn)
 
-Router.get('/signout', AuthController.signOut)
+Router.post('/signout', AuthController.signOut)
 
 export const authRoute = Router
