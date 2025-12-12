@@ -23,20 +23,6 @@ const friendRequestSchema = new mongoose.Schema(
 	}
 )
 
-// Ensure a user cannot send multiple friend requests to the same user
-friendRequestSchema.pre('save', function (next) {
-	if (!this.from || !this.to)
-		return next(new Error('from and to are required'))
-
-	const fromStr = this.from.toString()
-	const toStr = this.to.toString()
-
-	if (fromStr === toStr)
-		return next(new Error('Cannot send friend request to yourself'))
-
-	next()
-})
-
 friendRequestSchema.index({ from: 1, to: 1 }, { unique: true })
 
 friendRequestSchema.index({ from: 1 })
