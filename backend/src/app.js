@@ -2,6 +2,8 @@ import cookieParser from 'cookie-parser'
 import express from 'express'
 import { ROUTES } from './routes/index.js'
 import cors from 'cors'
+import swaggerUi from 'swagger-ui-express'
+import fs from 'fs'
 
 const app = express()
 
@@ -14,6 +16,12 @@ app.use(
 		credentials: true,
 	})
 )
+
+// Swagger Documentation
+const swaggerDocument = JSON.parse(
+	fs.readFileSync('./src/docs/swagger.json', 'utf8')
+)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 // Connect to database
 import '../src/libs/db.js'

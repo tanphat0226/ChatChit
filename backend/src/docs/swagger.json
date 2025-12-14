@@ -1,0 +1,425 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "ChatChit",
+		"version": "1.0.0",
+		"description": ""
+	},
+	"servers": [
+		{
+			"url": "http://localhost:5001/api"
+		}
+	],
+	"paths": {
+		"/auth/signout": {
+			"post": {
+				"summary": "SignOut",
+				"description": "Sign out user by invalidating the refresh token.",
+				"responses": {
+					"204": {
+						"description": "Sign out successful."
+					},
+					"500": {
+						"description": "Internal server error."
+					}
+				},
+				"tags": ["Auth"]
+			}
+		},
+		"/auth/signup": {
+			"post": {
+				"summary": "SignUp",
+				"description": "Register a new user.",
+				"responses": {
+					"201": {
+						"description": "User created successfully."
+					},
+					"400": {
+						"description": "Bad request. Invalid input data."
+					},
+					"409": {
+						"description": "Conflict. User already exists."
+					},
+					"500": {
+						"description": "Internal server error."
+					}
+				},
+				"tags": ["Auth"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"username": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string",
+										"format": "email"
+									},
+									"password": {
+										"type": "string"
+									},
+									"firstName": {
+										"type": "string"
+									},
+									"lastName": {
+										"type": "string"
+									}
+								},
+								"required": [
+									"username",
+									"email",
+									"password",
+									"firstName",
+									"lastName"
+								]
+							},
+							"example": {
+								"username": "user4",
+								"email": "user4@test.vn",
+								"password": "123456",
+								"firstName": "User",
+								"lastName": "Four"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/signin": {
+			"post": {
+				"summary": "SignIn",
+				"description": "Authenticate user and return access and refresh tokens.",
+				"responses": {
+					"200": {
+						"description": "Authentication successful.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string",
+											"example": "User User One Two signed in successfully"
+										},
+										"accessToken": {
+											"type": "string",
+											"example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+										}
+									},
+									"required": ["message", "accessToken"]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad request. Invalid input data."
+					},
+					"401": {
+						"description": "Unauthorized. Invalid credentials."
+					},
+					"500": {
+						"description": "Internal server error."
+					}
+				},
+				"tags": ["Auth"],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"username": {
+										"type": "string",
+										"example": "user1"
+									},
+									"password": {
+										"type": "string",
+										"example": "123456"
+									}
+								},
+								"required": ["username", "password"]
+							},
+							"example": {
+								"username": "user1",
+								"password": "123456"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/me": {
+			"get": {
+				"summary": "AuthMe",
+				"description": "Get the authenticated user's profile information.",
+				"responses": {
+					"200": {
+						"description": "User profile retrieved successfully."
+					},
+					"401": {
+						"description": "Unauthorized. Invalid or missing access token."
+					},
+					"500": {
+						"description": "Internal server error."
+					}
+				},
+				"tags": ["Auth"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		},
+		"/auth/refresh": {
+			"post": {
+				"summary": "Refresh Token",
+				"description": "Refresh access token using a valid refresh token.",
+				"responses": {
+					"200": {
+						"description": "Token refreshed successfully."
+					},
+					"403": {
+						"description": "Forbidden. Refresh token is missing."
+					},
+					"401": {
+						"description": "Unauthorized. Invalid or expired refresh token."
+					},
+					"500": {
+						"description": "Internal server error."
+					}
+				},
+				"tags": ["Auth"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		},
+		"/friends/requests": {
+			"post": {
+				"summary": "Send Friend Request",
+				"responses": {},
+				"tags": ["Friend"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"to": {
+										"type": "string"
+									},
+									"message": {
+										"type": "string"
+									}
+								}
+							},
+							"example": {
+								"to": "6932ed0d8cd716d7395e86ea",
+								"message": "Can I make friend with you? User4"
+							}
+						}
+					}
+				}
+			},
+			"get": {
+				"summary": "Get Friend Requests",
+				"responses": {},
+				"tags": ["Friend"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		},
+		"/friends/requests/6932e74be520f1e716185c9d/accept": {
+			"post": {
+				"summary": "Accept Friend Request",
+				"responses": {},
+				"tags": ["Friend"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		},
+		"/friends/requests/6932ea17f346f4e2d0876bea/decline": {
+			"post": {
+				"summary": "Decline Friend Request",
+				"responses": {},
+				"tags": ["Friend"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		},
+		"/friends/": {
+			"get": {
+				"summary": "Get All Friends",
+				"responses": {},
+				"tags": ["Friend"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		},
+		"/messages/direct": {
+			"post": {
+				"summary": "Send Direct Message",
+				"responses": {},
+				"tags": ["Message"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"recipientId": {
+										"type": "string"
+									},
+									"content": {
+										"type": "string"
+									}
+								}
+							},
+							"example": {
+								"recipientId": "693188c0d6bc54996fac7f48",
+								"content": "First message to User One Two from User Three <3"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/messages/group": {
+			"post": {
+				"summary": "Send Group Message",
+				"responses": {},
+				"tags": ["Message"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"conversationId": {
+										"type": "string"
+									},
+									"content": {
+										"type": "string"
+									}
+								}
+							},
+							"example": {
+								"conversationId": "693eaeb5ec1870e3cc559791",
+								"content": "Hellp everyone!"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/conversations/": {
+			"get": {
+				"summary": "Get Conversation",
+				"responses": {},
+				"tags": ["Conversation"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			},
+			"post": {
+				"summary": "Create Conversation",
+				"responses": {},
+				"tags": ["Conversation"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"type": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									},
+									"memberIds": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								}
+							},
+							"example": {
+								"type": "group",
+								"name": "AnRoiBao2 Group",
+								"memberIds": ["6932e4b6275851cc1dca0963"]
+							}
+						}
+					}
+				}
+			}
+		},
+		"/conversations/693eaeb5ec1870e3cc559791/messages": {
+			"get": {
+				"summary": "Get Message",
+				"responses": {},
+				"tags": ["Conversation"],
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				]
+			}
+		}
+	},
+	"components": {
+		"securitySchemes": {
+			"BearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	},
+	"security": [
+		{
+			"BearerAuth": []
+		}
+	]
+}

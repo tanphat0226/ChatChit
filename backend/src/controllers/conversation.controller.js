@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes'
-import { CONVERSATION_TYPES } from '../../utils/contants.js'
+import { CONVERSATION_TYPES } from '../utils/contants.js'
 import Conversation from '../models/conversation.model.js'
 import Message from '../models/message.model.js'
 

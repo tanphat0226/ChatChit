@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
-import { CONVERSATION_TYPES } from '../../utils/contants.js'
-import { updateConversationAfterCreateMessage } from '../../utils/messageHelper.js'
+import { CONVERSATION_TYPES } from '../utils/contants.js'
+import { updateConversationAfterCreateMessage } from '../utils/messageHelper.js'
 import Conversation from '../models/conversation.model.js'
 import Message from '../models/message.model.js'
 
