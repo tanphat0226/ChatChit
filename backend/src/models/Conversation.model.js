@@ -73,7 +73,7 @@ const conversationSchema = new mongoose.Schema(
 			enum: ['direct', 'group'],
 			required: true,
 		},
-		participant: {
+		participants: {
 			type: [participantSchema],
 			required: true,
 		},
@@ -83,7 +83,7 @@ const conversationSchema = new mongoose.Schema(
 		lastMessageAt: {
 			type: Date,
 		},
-		sendBy: [
+		seenBy: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'User',
@@ -104,7 +104,7 @@ const conversationSchema = new mongoose.Schema(
 	}
 )
 
-conversationSchema.index({ 'participant.userId': 1, lastMessageAt: -1 })
+conversationSchema.index({ 'participants.userId': 1, lastMessageAt: -1 })
 
 const Conversation = mongoose.model('Conversation', conversationSchema)
 
