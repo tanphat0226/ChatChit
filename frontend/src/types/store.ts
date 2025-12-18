@@ -1,3 +1,4 @@
+import type { Conversation, Message } from './chat'
 import type { User } from './user'
 
 export interface AuthState {
@@ -36,4 +37,29 @@ export interface AuthState {
 	fetchMe: () => Promise<void>
 
 	refreshToken: () => Promise<void>
+}
+
+export interface ThemeState {
+	isDarkMode: boolean
+	toggleTheme: () => void
+	setTheme: (dark: boolean) => void
+}
+
+export interface ChatStore {
+	conversations: Conversation[]
+	message: Record<
+		string,
+		{
+			items: Message[]
+			hasMore: boolean // infinite scroll
+			nextCursor?: string | null
+		}
+	>
+
+	activeConversationId: string | null
+	isLoading: boolean
+
+	reset: () => void
+	setActiveConversation: (conversationId: string | null) => void
+	fetchConversations: () => Promise<void>
 }
