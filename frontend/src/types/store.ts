@@ -47,7 +47,7 @@ export interface ThemeState {
 
 export interface ChatStore {
 	conversations: Conversation[]
-	message: Record<
+	messages: Record<
 		string,
 		{
 			items: Message[]
@@ -57,9 +57,11 @@ export interface ChatStore {
 	>
 
 	activeConversationId: string | null
-	isLoading: boolean
+	isConvoLoading: boolean
+	isMessageLoading: boolean
 
 	reset: () => void
 	setActiveConversation: (conversationId: string | null) => void
 	fetchConversations: () => Promise<void>
+	fetchMessages: (conversationId?: string) => Promise<void>
 }

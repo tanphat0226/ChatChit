@@ -2,14 +2,16 @@ import { chatService } from '@/services/chatServices'
 import type { ChatStore } from '@/types/store'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useAuthStore } from './useAuthStore'
 
 export const useChatStore = create<ChatStore>()(
 	persist(
 		(set, get) => ({
 			conversations: [],
-			message: {},
+			messages: {},
 			activeConversationId: null,
-			isLoading: false,
+			isConvoLoading: false, // for conversations
+			isMessageLoading: false, // for messages
 
 			setActiveConversation: (conversationId: string | null) => {
 				set({ activeConversationId: conversationId })
@@ -18,22 +20,74 @@ export const useChatStore = create<ChatStore>()(
 			reset: () => {
 				set({
 					conversations: [],
-					message: {},
+					messages: {},
 					activeConversationId: null,
-					isLoading: false,
+					isConvoLoading: false,
+					isMessageLoading: false,
 				})
 			},
 
 			fetchConversations: async () => {
 				try {
-					set({ isLoading: true })
+					set({ isConvoLoading: true })
 					const { conversations } =
 						await chatService.fetchConversations()
 					set({ conversations: conversations })
 				} catch (error) {
 					console.error('Failed to fetch conversations:', error)
 				} finally {
-					set({ isLoading: false })
+					set({ isConvoLoading: false })
+				}
+			},
+			fetchMessages: async (conversationId?: string) => {
+				const { activeConversationId, messages } = get()
+				const { user } = useAuthStore.getState()
+
+				const convoId = conversationId ?? activeConversationId
+
+				if (!convoId || !user) return
+
+				const current = messages?.[convoId]
+				const nextCursor =
+					current?.nextCursor === undefined ? '' : current?.nextCursor
+
+				if (nextCursor === null) return // no more messages to fetch
+
+				set({ isMessageLoading: true })
+
+				try {
+					const { messages: fetched, cursor } =
+						await chatService.fetchMessages(convoId, nextCursor)
+
+					const processedMessages = fetched.map((msg) => {
+						return {
+							...msg,
+							isOwn: msg.senderId === user._id,
+						}
+					})
+
+					set((state) => {
+						const prev = state.messages[convoId]?.items || []
+						const merged =
+							prev.length > 0
+								? [...processedMessages, ...prev]
+								: processedMessages
+
+						return {
+							messages: {
+								...state.messages,
+								[convoId]: {
+									items: merged,
+									hasMore: !!cursor,
+									nextCursor: cursor ?? null,
+								},
+							},
+						}
+					})
+				} catch (error) {
+					console.error('Failed to fetch messages:', error)
+				} finally {
+					set({ isMessageLoading: false })
 				}
 			},
 		}),
