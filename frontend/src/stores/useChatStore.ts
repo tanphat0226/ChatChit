@@ -1,10 +1,10 @@
 import { chatService } from '@/services/chatServices'
-import type { ChatStore } from '@/types/store'
+import type { ChatState } from '@/types/store'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useAuthStore } from './useAuthStore'
 
-export const useChatStore = create<ChatStore>()(
+export const useChatStore = create<ChatState>()(
 	persist(
 		(set, get) => ({
 			conversations: [],
@@ -88,6 +88,47 @@ export const useChatStore = create<ChatStore>()(
 					console.error('Failed to fetch messages:', error)
 				} finally {
 					set({ isMessageLoading: false })
+				}
+			},
+			sendDirectMessage: async (recipientId, content, imgUrl) => {
+				try {
+					const { activeConversationId } = get()
+
+					await chatService.sendDirectMessage(
+						recipientId,
+						content,
+						imgUrl,
+						activeConversationId || undefined
+					)
+
+					set((state) => ({
+						conversations: state.conversations.map((convo) =>
+							convo._id === activeConversationId
+								? { ...convo, seenBy: [] }
+								: convo
+						),
+					}))
+				} catch (error) {
+					console.error('Failed to send direct message:', error)
+				}
+			},
+			sendGroupMessage: async (conversationId, content, imgUrl) => {
+				try {
+					await chatService.sendGroupMessage(
+						conversationId,
+						content,
+						imgUrl
+					)
+
+					set((state) => ({
+						conversations: state.conversations.map((convo) =>
+							convo._id === get().activeConversationId
+								? { ...convo, seenBy: [] }
+								: convo
+						),
+					}))
+				} catch (error) {
+					console.error('Failed to send group message:', error)
 				}
 			},
 		}),
