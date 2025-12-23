@@ -1,8 +1,12 @@
 import { StatusCodes } from 'http-status-codes'
 import { CONVERSATION_TYPES } from '../utils/contants.js'
-import { updateConversationAfterCreateMessage } from '../utils/messageHelper.js'
+import {
+	emitNewMessage,
+	updateConversationAfterCreateMessage,
+} from '../utils/messageHelper.js'
 import Conversation from '../models/conversation.model.js'
 import Message from '../models/message.model.js'
+import { io } from '../socket/index.js'
 
 const sendDirectMessage = async (req, res) => {
 	try {
@@ -51,6 +55,9 @@ const sendDirectMessage = async (req, res) => {
 		// Save the updated conversation
 		await conversation.save()
 
+		// Emit the new message via Socket.IO
+		emitNewMessage(io, conversation, message)
+
 		// Respond with the created message
 		return res.status(StatusCodes.CREATED).json({ message })
 	} catch (error) {
@@ -85,6 +92,9 @@ const sendGroupMessage = async (req, res) => {
 		updateConversationAfterCreateMessage(conversation, newMessage, senderId)
 
 		await conversation.save()
+
+		// Emit the new message via Socket.IO
+		emitNewMessage(io, conversation, message)
 
 		return res.status(StatusCodes.CREATED).json({ message: newMessage })
 	} catch (error) {

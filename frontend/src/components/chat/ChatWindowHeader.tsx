@@ -6,10 +6,13 @@ import { SidebarTrigger } from '../ui/sidebar'
 import GroupChatAvatar from './GroupChatAvatar'
 import StatusBadge from './StatusBadge'
 import UserAvatar from './UserAvatar'
+import { useSocketStore } from '@/stores/useSocketStore'
 
 const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
 	const { conversations, activeConversationId } = useChatStore()
 	const { user } = useAuthStore()
+	const { onlineUsers } = useSocketStore()
+
 	let otherUser
 
 	chat = chat ?? conversations.find((c) => c._id === activeConversationId)
@@ -50,7 +53,13 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
 								name={otherUser?.displayName || 'User'}
 								avatarUrl={otherUser?.avatarUrl || undefined}
 							/>
-							<StatusBadge status={'offline'} />
+							<StatusBadge
+								status={
+									onlineUsers.includes(otherUser?._id ?? '')
+										? 'online'
+										: 'offline'
+								}
+							/>
 						</>
 					) : (
 						<>

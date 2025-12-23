@@ -1,8 +1,8 @@
-import app from './src/app.js'
+import server from './src/app.js'
 import { env } from './src/configs/environment.js'
 
 // Listen server
-const server = app.listen(env.PORT, () => {
+const serverInstance = server.listen(env.PORT, () => {
 	console.log(`Server is running on port ${env.PORT}`)
 })
 
@@ -12,7 +12,7 @@ const server = app.listen(env.PORT, () => {
  * existing connections to close before exiting.
  */
 process.on('SIGINT', () => {
-	server.close(() => {
+	serverInstance.close(() => {
 		console.log('Exit Server Express')
 	})
 })

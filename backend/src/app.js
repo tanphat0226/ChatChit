@@ -4,8 +4,7 @@ import { ROUTES } from './routes/index.js'
 import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 import fs from 'fs'
-
-const app = express()
+import { app, server } from './socket/index.js'
 
 // Middlewares
 app.use(express.json())
@@ -30,4 +29,4 @@ import { env } from './configs/environment.js'
 // Use Routes
 app.use('/api', ROUTES)
 
-export default app
+export default server

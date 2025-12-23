@@ -174,8 +174,27 @@ const getMessages = async (req, res) => {
 	}
 }
 
+const getUserConversationsForSocket = async (userId) => {
+	try {
+		const conversations = await Conversation.find(
+			{
+				'participants.userId': userId,
+			},
+			{
+				_id: 1,
+			}
+		)
+
+		return conversations.map((conv) => conv._id.toString())
+	} catch (error) {
+		console.error('Error fetching conversations:', error)
+		return []
+	}
+}
+
 export const ConversationController = {
 	createConversation,
 	getConversations,
 	getMessages,
+	getUserConversationsForSocket,
 }
